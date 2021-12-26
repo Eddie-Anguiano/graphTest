@@ -49,7 +49,7 @@ export default function Home(props) {
 
       <main className={styles.main}>
         {/* {JSON.stringify(props)} */}
-        <h1>stage-ready branch</h1>
+        <h1>stage-ready branch (updated)</h1>
         <div className='test' style={{ height: `${heightCurr}` }}>
           {text}
         </div>
