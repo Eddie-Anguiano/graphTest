@@ -14,3 +14,13 @@ a {
 * {
   box-sizing: border-box;
 }
+
+
+.test { 
+  background-color: lightgray;
+  max-width: 800px;
+  font-size: 14px;
+  line-height: 18px;
+  overflow: hidden;
+  color: red;
+}

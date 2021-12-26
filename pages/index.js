@@ -1,8 +1,44 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import Head from "next/head";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import styles from "../styles/Home.module.css";
 
-export default function Home() {
+export default function Home(props) {
+  const text = "hIt should also be clear as to why we are going to be basing our transition off height. A similar affect can be created using the max-height attribute, where the maximum height is set to some value that should never be set. This has a critical issue: in order to give a consistent transition speed, you need to set a height that is not too high so that the effect is not over emphasized. To do this, while at the same time being high enough not to ever cause a scroll bar to show up in the text display area usually leads to a lot of hand waving, ending with a magic number for max height that eventually becomes code no one, including yourself, wants to touch or change.In order to properly apply transition CSS, you can note use property value auto, so in order to use height, we need to determi"
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isOverflow, setIsOverflow] = useState(false);
+  const [heightCurr, setHeightCurr] = useState('72px');
+  const [heightMax, setHeightMax] = useState(72);
+  const [heightMin, setHeightMin] = useState(72);
+
+
+  const handleClickBtn = () => {
+    setHeightCurr(isExpanded ? `${heightMin}px` : `${heightMax}px`);
+    setIsExpanded((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (document) {
+      const element = document.querySelector(".test");
+      const clientHeight = element?.clientHeight || 72;
+      const scrollHeight = element?.scrollHeight || 72;
+
+      if (scrollHeight > clientHeight) {
+        setIsOverflow(true);
+        setHeightMax(scrollHeight);
+        setHeightMin(clientHeight);
+        setHeightCurr(`${clientHeight}px`);
+      } else {
+        setHeightCurr('auto');
+      }
+    }
+    
+  }, [text]);
+  
+  
+
+  
   return (
     <div className={styles.container}>
       <Head>
@@ -12,58 +48,46 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        {/* {JSON.stringify(props)} */}
+        <div className='test' style={{ height: `${heightCurr}` }}>
+          {text}
         </div>
+        { isOverflow && <ToggleButton isExpanded={isExpanded} onClick={handleClickBtn}/>}
       </main>
 
       <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
+        footer
       </footer>
     </div>
-  )
+  );
+}
+
+const ToggleButton = ({ isExpanded, onClick }) => {
+  return (
+    <button className="btn-toggle" onClick={onClick}>
+      {isExpanded ? "Show Less" : "Show More"}
+    </button>
+  );
+};
+
+export async function getStaticProps() {
+  const client = new ApolloClient({
+    uri: "https://live-headless-puvu.pantheonsite.io/graphql",
+    cache: new InMemoryCache(),
+  });
+
+  const { data } = await client.query({
+    query: gql`query {
+      article(id: 2) {
+        title,
+        author
+      }
+    }`,
+  });
+
+  return {
+    props: {
+      artice: data
+    }
+  }
 }
