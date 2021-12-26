@@ -49,6 +49,7 @@ export default function Home(props) {
 
       <main className={styles.main}>
         {/* {JSON.stringify(props)} */}
+        <h1>main branch</h1>
         <div className='test' style={{ height: `${heightCurr}` }}>
           {text}
         </div>
